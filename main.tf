@@ -34,6 +34,16 @@ resource aws_vpc_endpoint_subnet_association "sna" {
   subnet_id       = each.value
 }
 
+
+data "aws_route_tables" "rts" {
+  vpc_id = var.vpc_id
+
+  filter {
+    name   = "association.subnet-id"
+    values = var.subnet_ids
+  }
+}
+
 data aws_route_table "rts" {
   for_each = var.endpoint_type == "Interface" ?  [] : var.subnet_ids
 
@@ -43,6 +53,6 @@ data aws_route_table "rts" {
 resource aws_vpc_endpoint_route_table_association "rta" {
   count = length(data.aws_route_table.rts)
 
-  route_table_id = tolist(data.aws_route_table.rts.id)[count.index]
+  route_table_id = tolist(data.aws_route_tables.rts.id)[count.index]
   vpc_endpoint_id = aws_vpc_endpoint.vpce.id
 }
