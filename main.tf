@@ -34,13 +34,14 @@ resource aws_vpc_endpoint_subnet_association "sna" {
   subnet_id       = each.value
 }
 
-data aws_route_table "rt" {
-  for_each = var.endpoint_type != "Interface" ? var.subnet_ids : []
+data aws_route_table "rts" {
+  for_each = var.endpoint_type == "Interface" ?  [] : var.subnet_ids
+
   subnet_id = each.value
 }
 
 resource aws_vpc_endpoint_route_table_association "rta" {
-  for_each = var.endpoint_type != "Interface" ? data.aws_route_table.rt : []
+  for_each = var.endpoint_type == "Interface" ?  [] : data.aws_route_table.rts
 
   route_table_id = each.value
   vpc_endpoint_id = aws_vpc_endpoint.vpce.id
