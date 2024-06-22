@@ -53,6 +53,6 @@ data aws_route_table "rts" {
 resource aws_vpc_endpoint_route_table_association "rta" {
   count = length(data.aws_route_table.rts)
 
-  route_table_id = tolist(data.aws_route_tables.rts.id)[count.index]
+  route_table_id = tolist(data.aws_route_tables.rts.ids)[count.index]
   vpc_endpoint_id = aws_vpc_endpoint.vpce.id
 }
